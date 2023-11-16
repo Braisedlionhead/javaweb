@@ -14,20 +14,41 @@ public class WebServer {
         System.out.println("服务已经监听在" + port + "端口");
         while (true) {
             Socket accept = serverSocket.accept();
-            // 获得输入流
+            // 获得输入流和输出流
             InputStream inputStream = accept.getInputStream();
+            OutputStream outputStream = accept.getOutputStream();
+            // 获取请求， 封装响应
             HttpRequest request = HttpRequestHandler.getRequest(inputStream);
-            System.out.println(request);
+            HttpResponse response = new HttpResponse();
+            String uri = request.getUri();
+            // 静态资源
+            if (uri.contains(".html")) {
+                // 如果是静态资源， 要拿到静态资源的具体路径
+                String path = Constant.ROOT_DIR + request.getUri();
+                String body = IOUtils.getContext(path);
+                if (body != null) {
+
+                    // String body = "<h1 style=\"color:red\"><del>hello server!?</del><h1>";
+                    response.setHeader("Content-Type", "text/html;charset=UTF-8");
+                    response.setHeader("Content-Length",
+                            Integer.toString(body.getBytes().length));
+                    response.setBody(body);
+
+                    // 将响应报文写出给浏览器
+                    HttpResponseHandler.write(outputStream, response);
+                    // outputStream.write(response2.getBytes());
+                }
+                // 处理动态资源
+            } else {
+
+            }
 
             // 获取资源所在的文件地址
             // request.getUri(); 得到的可以是 index.html
-            String path = Constant.ROOT_DIR + request.getUri();
 
             // 给浏览器响应
-            OutputStream outputStream = accept.getOutputStream();
 
             // 处理数据库 （访问数据库）
-            HttpResponse response = new HttpResponse();
             response.setOutputStream(outputStream); // 将流设置到response中， 因为将来要用流给浏览器中写东西
             //
             Servlet servlet = Container.getServlet(request.getUri());
@@ -35,31 +56,6 @@ public class WebServer {
             if (servlet != null) {
                 servlet.service(request, response);
             }
-
-            //
-            // 以下是处理html的
-            // 按照http协议的格式封装一个报文
-            //
-            // HttpResponse response = new HttpResponse();
-            // String body = IOUtils.getContext(path);
-            // if (body != null) {
-
-            // // String body = "<h1 style=\"color:red\"><del>hello server!?</del><h1>";
-            // response.setHeader("Content-Type", "text/html;charset=UTF-8");
-            // response.setHeader("Content-Length",
-            // Integer.toString(body.getBytes().length)); //
-            // 也可以用这种方法body.getBytes().length+""
-            // response.setBody(body);
-            // String response2 = "HTTP/1.1 200 OK\r\n" +
-            // "Content-Length: 39\r\n" +
-            // "Content-Type: text/html;charset=UTF-8\r\n\r\n" +
-            // "<h1 style=\"color:red\">hello server!<h1>";
-
-            // // 将响应报文写出给浏览器
-            // HttpResponseHandler.write(outputStream, response);
-            // // outputStream.write(response2.getBytes());
-            // }
-            //
 
             outputStream.close();
             inputStream.close();
