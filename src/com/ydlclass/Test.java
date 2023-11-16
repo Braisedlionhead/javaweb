@@ -5,6 +5,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ydlclass.core.HttpResponse;
+import com.ydlclass.core.HttpResponseHandler;
+
 /**
  * 封装一个响应对象
  */
