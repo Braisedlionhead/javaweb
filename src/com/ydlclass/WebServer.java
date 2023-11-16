@@ -44,7 +44,6 @@ public class WebServer {
 
                     // 将响应报文写出给浏览器
                     HttpResponseHandler.write(outputStream, response);
-                    // outputStream.write(response2.getBytes());
                 }
                 // 处理动态资源
             } else {

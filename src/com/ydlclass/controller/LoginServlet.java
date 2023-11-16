@@ -19,10 +19,9 @@ public class LoginServlet implements Servlet {
         User user = userDao.findUserByUsername(username);
         if (user == null) {
             HttpResponse.fail(response.getOutputStream(), "can not find user");
-
         } else {
             // 用户存在， 密码相等
-            if (user.getPassword() != null && password.equals(user.getPassword())) {
+            if (user.getPassword() != null && user.getPassword().equals(password)) {
                 HttpResponse.sucess(response.getOutputStream(), "successfully login");
             } else {
                 HttpResponse.fail(response.getOutputStream(), "wrong password");
