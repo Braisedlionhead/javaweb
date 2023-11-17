@@ -1,1 +1,1 @@
-# javaweb
+# javaweb-study
