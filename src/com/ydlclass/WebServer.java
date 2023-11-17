@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.UUID;
 
 import com.ydlclass.constant.Constant;
 import com.ydlclass.core.Container;
@@ -13,6 +14,7 @@ import com.ydlclass.core.HttpRequestHandler;
 import com.ydlclass.core.HttpResponse;
 import com.ydlclass.core.HttpResponseHandler;
 import com.ydlclass.core.Servlet;
+import com.ydlclass.core.Session;
 import com.ydlclass.util.IOUtils;
 
 public class WebServer {
@@ -31,6 +33,17 @@ public class WebServer {
             HttpResponse response = new HttpResponse();
             response.setOutputStream(outputStream); // 将流设置到response中， 因为将来要用流给浏览器中写东西
             String uri = request.getUri();
+
+            // 处理cookie
+            // 服务端让浏览器写cookie， 没有cookie就第一次访问
+            if (response.getHeader("Cookie") == null) {
+                String jsessionid = UUID.randomUUID().toString();
+                response.setHeader("set-Cookie", "jsessionid=" + jsessionid);
+                // 配置一个规则， 然后就可以给规则里写数据了
+                Container.addSession(jsessionid, new Session());
+
+            }
+
             // 静态资源
             if (uri.contains(".html")) {
                 // 如果是静态资源， 要拿到静态资源的具体路径

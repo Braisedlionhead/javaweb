@@ -19,7 +19,12 @@ public class Container {
      * 存放了大量uri和servlet的对应关系
      */
     private static final Map<String, Servlet> SERVLETS = new ConcurrentHashMap<>(8);
-    private static final Map<String, Servlet> SESSIONS = new ConcurrentHashMap<>(8);
+
+    // 会话， 每个session中都能够保存一些信息
+    /**
+     * 每一个客户端的session数据
+     */
+    private static final Map<String, Session> SESSIONS = new ConcurrentHashMap<>(8);
 
     // 程序启动时， 就把部分内容加载进去
     // 启动的时候注册
@@ -51,6 +56,14 @@ public class Container {
 
     public static Servlet getServlet(String uri) {
         return SERVLETS.get(uri);
+    }
+
+    public static void addSession(String key, Session session) {
+        SESSIONS.put(key, session);
+    }
+
+    public static Session getSession(String key) {
+        return SESSIONS.get(key);
     }
 
 }

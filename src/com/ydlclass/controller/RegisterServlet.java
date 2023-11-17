@@ -24,15 +24,15 @@ public class RegisterServlet implements Servlet {
             // 用户不存在， 可以注册
             if (user == null) {
                 userDao.insertUser(new User(1, username, password)); // id在表中会自增， 故不严谨的情况下可以随便设置
-                HttpResponse.sucess(response.getOutputStream(), "注册成功！");
+                HttpResponse.sucess(response.getOutputStream(), "successfully register");
             } else {
                 // 用户已经存在
-                HttpResponse.fail(response.getOutputStream(), "注册失败！");
+                HttpResponse.fail(response.getOutputStream(), "user already exists");
                 // 之后可以跳转到登录界面， 让其进行登录
             }
         } catch (Exception e) {
             e.printStackTrace();
-            HttpResponse.error(response.getOutputStream(), "有异常发生！");
+            HttpResponse.error(response.getOutputStream(), "exception occurs");
         }
 
     }
