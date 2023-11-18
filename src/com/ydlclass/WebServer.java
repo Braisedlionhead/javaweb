@@ -36,12 +36,19 @@ public class WebServer {
 
             // 处理cookie
             // 服务端让浏览器写cookie， 没有cookie就第一次访问
-            if (response.getHeader("Cookie") == null) {
-                String jsessionid = UUID.randomUUID().toString();
-                response.setHeader("set-Cookie", "jsessionid=" + jsessionid);
-                // 配置一个规则， 然后就可以给规则里写数据了
-                Container.addSession(jsessionid, new Session());
-
+            if (request.getHeader("Cookie") == null) {
+                createSession(response);
+                // 创建session 1、cookie没有 2、有cookie没有jsessionid 3、找不到session
+            } else {
+                String cookie = request.getHeader("Cookie");
+                if (!cookie.contains("jsessionid")) {
+                    createSession(response);
+                } else {
+                    String jessionid = cookie.split("=")[1];
+                    if (Container.getSession(jessionid) == null) {
+                        createSession(response);
+                    }
+                }
             }
 
             // 静态资源
@@ -70,6 +77,14 @@ public class WebServer {
             outputStream.close();
             inputStream.close();
             accept.close();
+
         }
+    }
+
+    public static void createSession(HttpResponse response) {
+        String jsessionid = UUID.randomUUID().toString();
+        response.setHeader("set-Cookie", "jsessionid=" + jsessionid);
+        // 配置一个柜子， 然后就可以给柜子里写数据了
+        Container.addSession(jsessionid, new Session());
     }
 }

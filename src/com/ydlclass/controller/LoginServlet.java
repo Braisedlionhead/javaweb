@@ -1,8 +1,10 @@
 package com.ydlclass.controller;
 
+import com.ydlclass.core.Container;
 import com.ydlclass.core.HttpRequest;
 import com.ydlclass.core.HttpResponse;
 import com.ydlclass.core.Servlet;
+import com.ydlclass.core.Session;
 import com.ydlclass.dao.UserDao;
 import com.ydlclass.entity.User;
 
@@ -23,6 +25,14 @@ public class LoginServlet implements Servlet {
             // 用户存在， 密码相等
             if (user.getPassword() != null && user.getPassword().equals(password)) {
                 HttpResponse.sucess(response.getOutputStream(), "successfully login");
+                if (request.getHeader("Cookie") != null) {
+                    // 从Cookie中拿id， 拿自己的柜子
+                    String cookie = request.getHeader("Cookie");
+                    String sessionId = cookie.split("=")[1];
+                    Session session = Container.getSession(sessionId);
+                    session.setAttribute("user", user);
+                }
+
             } else {
                 HttpResponse.fail(response.getOutputStream(), "wrong password");
             }

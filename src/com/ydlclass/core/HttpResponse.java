@@ -112,7 +112,15 @@ public class HttpResponse implements Serializable {
         httpResponse.setHeader("Content-Length", Integer.toString(body.getBytes().length));
         httpResponse.setBody(body);
         HttpResponseHandler.write(outputStream, httpResponse);
-
     }
 
+    // 重定向
+    // http://127.0.0.1:8080/login.html
+    public static void redirect(OutputStream outputStream, String url) {
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setCode("302");
+        httpResponse.setMessage("Moved Temporarily");
+        httpResponse.setHeader("Location", url);
+        HttpResponseHandler.write(outputStream, httpResponse);
+    }
 }
