@@ -1,0 +1,38 @@
+<web-app>
+
+    <port>8080</port>
+    <base-url>D://www/</base-url>
+
+    <data-source>
+        <properties name="url" value="jdbc:mysql://127.0.0.1:3306/ydlclass?characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai" />
+        <properties name="username" value="root" />
+        <properties name="password" value="root" />
+        <properties name="driverName" value="com.mysql.cj.jdbc.Driver" />
+    </data-source>
+
+    <servlets>
+        <servlet>
+            <url>/user.do</url>
+            <servlet-class>com.ydlclass.controller.UserServlet</servlet-class>
+        </servlet>
+        <servlet>
+            <url>/login.do</url>
+            <servlet-class>com.ydlclass.controller.LoginServlet</servlet-class>
+        </servlet>
+        <servlet>
+            <url>/register.do</url>
+            <servlet-class>com.ydlclass.controller.RegisterServlet</servlet-class>
+        </servlet>
+        <servlet>
+            <url>/index.do</url>
+            <servlet-class>com.ydlclass.controller.IndexServlet</servlet-class>
+        </servlet>
+    </servlets>
+
+    <filters>
+        <filter>com.ydlclass.filter.CharsetFilter</filter>
+        <filter>com.ydlclass.filter.LoginFilter</filter>
+    </filters>
+
+
+</web-app>

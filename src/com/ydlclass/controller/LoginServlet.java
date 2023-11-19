@@ -20,11 +20,11 @@ public class LoginServlet implements Servlet {
         UserDao userDao = new UserDao();
         User user = userDao.findUserByUsername(username);
         if (user == null) {
-            HttpResponse.fail(response.getOutputStream(), "can not find user");
+            HttpResponse.fail(response, "can not find user");
         } else {
             // 用户存在， 密码相等
             if (user.getPassword() != null && user.getPassword().equals(password)) {
-                HttpResponse.sucess(response.getOutputStream(), "successfully login");
+                HttpResponse.sucess(response, "successfully login");
                 if (request.getHeader("Cookie") != null) {
                     // 从Cookie中拿id， 拿自己的柜子
                     String cookie = request.getHeader("Cookie");
@@ -34,7 +34,7 @@ public class LoginServlet implements Servlet {
                 }
 
             } else {
-                HttpResponse.fail(response.getOutputStream(), "wrong password");
+                HttpResponse.fail(response, "wrong password");
             }
         }
     }

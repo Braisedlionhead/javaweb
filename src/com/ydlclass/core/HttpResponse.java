@@ -79,48 +79,44 @@ public class HttpResponse implements Serializable {
     }
 
     // 为了以后方便使用， 构建一个成功的响应
-    public static void sucess(OutputStream outputStream, String msg) {
-        HttpResponse httpResponse = new HttpResponse();
+    public static void sucess(HttpResponse httpResponse, String msg) {
         String body = "<h1>" + msg + "</h1>";
         httpResponse.setHeader("Content-Type", "text/html;charset=UTF-8");
         httpResponse.setHeader("Content-Length", Integer.toString(body.getBytes().length));
         httpResponse.setBody(body);
-        HttpResponseHandler.write(outputStream, httpResponse);
+        HttpResponseHandler.write(httpResponse.getOutputStream(), httpResponse);
 
     }
 
     // 为了以后方便使用， 构建一个fail的响应
     // 通信成功(请求和响应成功)， 但是某些业务出了问题
-    public static void fail(OutputStream outputStream, String msg) {
-        HttpResponse httpResponse = new HttpResponse();
+    public static void fail(HttpResponse httpResponse, String msg) {
         String body = "<h1>" + msg + "</h1>";
         httpResponse.setHeader("Content-Type", "text/html;charset=UTF-8");
         httpResponse.setHeader("Content-Length", Integer.toString(body.getBytes().length));
         httpResponse.setBody(body);
-        HttpResponseHandler.write(outputStream, httpResponse);
+        HttpResponseHandler.write(httpResponse.getOutputStream(), httpResponse);
 
     }
 
     // 为了以后方便使用， 构建一个error的响应
     // 通信失败
-    public static void error(OutputStream outputStream, String msg) {
-        HttpResponse httpResponse = new HttpResponse();
+    public static void error(HttpResponse httpResponse, String msg) {
         String body = "<h1>" + msg + "</h1>";
         httpResponse.setCode("500");
         httpResponse.setMessage("Internal Server Error");
         httpResponse.setHeader("Content-Type", "text/html;charset=UTF-8");
         httpResponse.setHeader("Content-Length", Integer.toString(body.getBytes().length));
         httpResponse.setBody(body);
-        HttpResponseHandler.write(outputStream, httpResponse);
+        HttpResponseHandler.write(httpResponse.getOutputStream(), httpResponse);
     }
 
     // 重定向
     // http://127.0.0.1:8080/login.html
-    public static void redirect(OutputStream outputStream, String url) {
-        HttpResponse httpResponse = new HttpResponse();
+    public static void redirect(HttpResponse httpResponse, String url) {
         httpResponse.setCode("302");
         httpResponse.setMessage("Moved Temporarily");
         httpResponse.setHeader("Location", url);
-        HttpResponseHandler.write(outputStream, httpResponse);
+        HttpResponseHandler.write(httpResponse.getOutputStream(), httpResponse);
     }
 }

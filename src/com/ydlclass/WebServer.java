@@ -8,22 +8,28 @@ import java.net.Socket;
 import java.util.UUID;
 
 import com.ydlclass.constant.Constant;
+import com.ydlclass.core.Configuration;
 import com.ydlclass.core.Container;
+import com.ydlclass.core.Filter;
 import com.ydlclass.core.HttpRequest;
 import com.ydlclass.core.HttpRequestHandler;
 import com.ydlclass.core.HttpResponse;
 import com.ydlclass.core.HttpResponseHandler;
 import com.ydlclass.core.Servlet;
 import com.ydlclass.core.Session;
+import com.ydlclass.filter.LoginFilter;
 import com.ydlclass.util.IOUtils;
 
 public class WebServer {
 
-    public static void main(String[] args) throws IOException {
-        int port = 8080;
-        ServerSocket serverSocket = new ServerSocket(port);
-        System.out.println("服务已经监听在" + port + "端口");
-        while (true) {
+    public static void main(String[] args) throws Exception {
+        // 加载配置
+        System.out.println("开始加载配置...");
+
+        // 启动一个服务器
+        ServerSocket serverSocket = new ServerSocket(Configuration.PORT); // 主动使用一个类时， 这个类就会被加载
+        System.out.println("服务已经监听在" + Configuration.PORT + "端口");
+        cap: while (true) {
             Socket accept = serverSocket.accept();
             // 获得输入流和输出流
             InputStream inputStream = accept.getInputStream();
@@ -33,6 +39,15 @@ public class WebServer {
             HttpResponse response = new HttpResponse();
             response.setOutputStream(outputStream); // 将流设置到response中， 因为将来要用流给浏览器中写东西
             String uri = request.getUri();
+
+            // 统一地处理请求
+            for (Filter filter : Container.FILTERS) {
+                // 处理请求
+                Boolean flag = filter.preFilter(request, response);
+                if (!flag) {
+                    continue cap;
+                }
+            }
 
             // 处理cookie
             // 服务端让浏览器写cookie， 没有cookie就第一次访问
@@ -66,7 +81,7 @@ public class WebServer {
                     HttpResponseHandler.write(outputStream, response);
                 }
                 // 处理动态资源
-            } else {
+            } else if (uri.contains(".do")) {
                 Servlet servlet = Container.getServlet(request.getUri());
                 // 避免空指针异常
                 if (servlet != null) {
@@ -74,6 +89,14 @@ public class WebServer {
                 }
             }
 
+            // 在这里统一处理响应
+            for (Filter filter : Container.FILTERS) {
+                // 处理请求
+                Boolean flag = filter.postFilter(request, response);
+                if (!flag) {
+                    continue cap;
+                }
+            }
             outputStream.close();
             inputStream.close();
             accept.close();
